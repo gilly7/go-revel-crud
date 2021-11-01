@@ -47,7 +47,7 @@ func (c Post) List() revel.Result {
 
 	recordsCount, err := newPost.Count(c.Request.Context(), db.DB(), paginationFilter)
 	if err != nil {
-		c.Log.Errorf("could not get posts count: %v", err)
+		c.Log.Errorf("could not get posts count for listing: %v", err)
 		result = entities.Response{
 			Success: false,
 			Status:  http.StatusInternalServerError,
@@ -87,10 +87,19 @@ func (c Post) Get(id int64) revel.Result {
 }
 
 func (c Post) Add() revel.Result {
-
 	var status int
 	postForm := forms.Post{}
-	c.Params.BindJSON(&postForm)
+	err := c.Params.BindJSON(&postForm)
+	if err != nil {
+		c.Log.Errorf("could not bind create post form to json: %v", err)
+		status = http.StatusBadRequest
+		c.Response.SetStatus(status)
+		return c.RenderJSON(entities.Response{
+			Message: "There was a problem with the form you submitted",
+			Status:  status,
+			Success: false,
+		})
+	}
 
 	ctx := c.Request.Context()
 
@@ -115,7 +124,7 @@ func (c Post) Add() revel.Result {
 		Title:    postForm.Title,
 		Content:  postForm.Content,
 	}
-	err := newPost.Save(ctx, db.DB())
+	err = newPost.Save(ctx, db.DB())
 	if err != nil {
 		c.Log.Errorf("could not save post: %v", err)
 		status = http.StatusInternalServerError
@@ -139,10 +148,21 @@ func (c Post) Add() revel.Result {
 func (c *Post) Update(id int64) revel.Result {
 	var status int
 	data := models.Post{}
-	c.Params.BindJSON(&data)
+	err := c.Params.BindJSON(&data)
+	if err != nil {
+		c.Log.Errorf("could not bind update post form to json: %v", err)
+		status = http.StatusBadRequest
+		c.Response.SetStatus(status)
+		return c.RenderJSON(entities.Response{
+			Message: "There was a problem with the form you submitted",
+			Status:  status,
+			Success: false,
+		})
+	}
+
 	data.ID = id
 
-	err := data.Save(c.Request.Context(), db.DB())
+	err = data.Save(c.Request.Context(), db.DB())
 	if err != nil {
 		c.Log.Errorf("could not save post: %v", err)
 		status = http.StatusInternalServerError

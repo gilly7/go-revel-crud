@@ -1,18 +1,18 @@
 version: '3.9'
 
 services:
-  go-revel-crud:
-    build:
-      context: .
-      dockerfile: ./Dockerfile.local
-    ports:
-      - 8090:8090
-    volumes:
-      - .:/app
-    environment:
-      - ENV=dev
-      - PORT=8090
-      - DB_URL=postgres://go-revel-crud:go-revel-crud@postgres/go-revel-crud?sslmode=disable
+  # go-revel-crud:
+  #   build:
+  #     context: .
+  #     dockerfile: ./Dockerfile.local
+  #   ports:
+  #     - 8090:8090
+  #   volumes:
+  #     - .:/app
+  #   environment:
+  #     - ENV=dev
+  #     - PORT=8090
+  #     - DB_URL=postgres://go-revel-crud:go-revel-crud@postgres/go-revel-crud?sslmode=disable
 
   postgres:
     image: postgres:14.0-alpine

@@ -16,5 +16,4 @@ ENV CGO_ENABLED 0
 
 ADD . .
 
-# Run revel app
 ENTRYPOINT revel run
